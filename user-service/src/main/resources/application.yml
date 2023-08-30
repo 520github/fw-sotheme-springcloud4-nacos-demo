@@ -1,0 +1,21 @@
+server:
+  port: ${port:6062}
+
+spring:
+  application:
+    name: userService4
+  profiles:
+    active: ${activeProfile:dev}
+  cloud:
+    nacos:
+      config:
+        server-addr: 192.168.5.25:${NACOS_PORT:8848}
+        namespace: demo
+        group: demo
+  config:
+    import:
+      - nacos:dev-common.yml
+      - nacos:dev-log-common.yml
+      - nacos:dev-user.yml
+      - nacos:dev-nacos-common.yml
+      - nacos:dev-mysql-common.yml

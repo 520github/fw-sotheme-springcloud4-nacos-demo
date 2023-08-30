@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.sunso.sotheme.springcloud4.user.mapper.UserMapper">
+
+  <resultMap id="baseUserMap" type="org.sunso.sotheme.springcloud4.user.entity.User">
+    <result column="id" property="id" />
+    <result column="name" property="name" />
+    <result column="age" property="age" />
+    <result column="sex" property="sex" />
+    <result column="education" property="education" />
+    <result column="creation_time" property="creationTime" />
+    <result column="update_time" property="updateTime" />
+  </resultMap>
+
+  <select id="findOneByUserId" resultMap="baseUserMap">
+    select * from user where id=#{userId}
+  </select>
+</mapper>

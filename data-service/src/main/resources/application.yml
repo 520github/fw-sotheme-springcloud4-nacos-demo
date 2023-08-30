@@ -1,0 +1,20 @@
+server:
+  port: ${port:6063}
+
+spring:
+  application:
+    name: dataService4
+  profiles:
+    active: ${activeProfile:dev}
+  cloud:
+    nacos:
+      config:
+        server-addr: @nacos.addr@:${NACOS_PORT:8848}
+        namespace: demo
+        group: demo
+  config:
+    import:
+      - nacos:@profiles.active@-common.yml
+      - nacos:@profiles.active@-data.yml
+      - nacos:@profiles.active@-nacos-common.yml
+      - nacos:@profiles.active@-mysql-common.yml

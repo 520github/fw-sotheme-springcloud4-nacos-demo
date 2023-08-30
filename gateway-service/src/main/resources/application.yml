@@ -1,0 +1,40 @@
+server:
+  port: ${port:6060}
+
+gateway:
+  filter:
+    gloabl-request-rate-count: 10
+    verify-token: false
+
+spring:
+  application:
+    name: gatewayService
+  profiles:
+    active: ${activeProfile:dev}
+  config:
+    import:
+      - nacos:dev-common.yml
+      - nacos:dev-nacos-common.yml
+  cloud:
+    nacos:
+      config:
+        server-addr: 192.168.5.25:${NACOS_PORT:8848}
+        namespace: demo
+        group: demo
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        #
+        - id: baidu
+          uri: http://www.baidu.com
+          predicates:
+            - Path=/
+        # The requested URL /dataService4/data/check/105 was not found on this server.
+        - id: data
+          uri: http://www.baidu.com
+          # 必须小于0，routes配置才会覆盖discovery.locator里的配置
+          order: -1
+          predicates:
+              - Path=/dataService4/data/check/**
