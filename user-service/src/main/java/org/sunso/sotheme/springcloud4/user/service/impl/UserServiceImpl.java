@@ -4,10 +4,14 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.sunso.sotheme.springcloud4.common.dto.data.DataDTO;
 import org.sunso.sotheme.springcloud4.common.dto.user.UserDTO;
 import org.sunso.sotheme.springcloud4.user.entity.User;
+import org.sunso.sotheme.springcloud4.user.feign.DataFeignClient;
 import org.sunso.sotheme.springcloud4.user.mapper.UserMapper;
 import org.sunso.sotheme.springcloud4.user.service.UserService;
+
+import java.util.Date;
 
 @Slf4j
 @Service
@@ -16,8 +20,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Autowired
     private UserMapper userMapper;
 
+    @Autowired
+    private DataFeignClient dataFeignClient;
+
     @Override
     public User findOneByUserId(Long userId) {
+        dataFeignClient.save(getDataDTO("findOneByUserId"));
         return userMapper.findOneByUserId(userId);
     }
 
@@ -53,5 +61,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             return 1;
         }
         return 0;
+    }
+
+    private DataDTO getDataDTO(String eventId) {
+        DataDTO dto = new DataDTO();
+        dto.setServerId("userService");
+        dto.setServerName("userService4");
+        dto.setEventId(eventId);
+        dto.setEventName(eventId);
+        dto.setEventTime(new Date());
+        return dto;
     }
 }

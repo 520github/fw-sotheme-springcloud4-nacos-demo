@@ -5,8 +5,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.sunso.sotheme.springcloud4.common.dto.data.DataDTO;
 import org.sunso.sotheme.springcloud4.common.dto.user.UserDTO;
 import org.sunso.sotheme.springcloud4.order.entity.Order;
+import org.sunso.sotheme.springcloud4.order.feign.DataFeignClient;
 import org.sunso.sotheme.springcloud4.order.feign.UserFeignClient;
 import org.sunso.sotheme.springcloud4.order.feign.UserServiceFeignClient;
 import org.sunso.sotheme.springcloud4.order.service.OrderService;
@@ -25,6 +27,10 @@ public class OrderController {
     @Autowired
     private UserServiceFeignClient userServiceFeignClient;
 
+    @Autowired
+    private DataFeignClient dataFeignClient;
+
+
 
     @GetMapping("/get/{orderId}")
     public Order findOneByOrderId(@PathVariable Long orderId) {
@@ -37,6 +43,7 @@ public class OrderController {
 
     @GetMapping("/user/get/{userId}")
     public UserDTO findOneUserByUserId(@PathVariable Long userId) {
+        dataFeignClient.save(getDataDTO("/user/get/"+userId));
         return userFeignClient.findOneByUserId(userId);
     }
 
@@ -64,5 +71,15 @@ public class OrderController {
         userDTO.setCreationTime(new Date());
         userDTO.setUpdateTime(new Date());
         return userDTO;
+    }
+
+    private DataDTO getDataDTO(String eventId) {
+        DataDTO dto = new DataDTO();
+        dto.setServerId("orderService");
+        dto.setServerName("orderService4");
+        dto.setEventId(eventId);
+        dto.setEventName(eventId);
+        dto.setEventTime(new Date());
+        return dto;
     }
 }

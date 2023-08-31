@@ -20,6 +20,12 @@
     <dependencies>
 
         <dependency>
+            <groupId>org.sunso.sotheme.springcloud4</groupId>
+            <artifactId>common-service-springcloud4-nacos</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
             <exclusions>
@@ -94,7 +100,7 @@
             <properties>
                 <!-- 环境标识，需要与配置文件的名称相对应 -->
                 <profiles.active>dev</profiles.active>
-                <nacos.addr>192.168.5.25</nacos.addr>
+                <nacos.addr>127.0.0.1</nacos.addr>
             </properties>
             <activation>
                 <!-- 默认环境 -->
