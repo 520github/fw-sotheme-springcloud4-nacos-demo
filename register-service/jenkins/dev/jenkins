@@ -1,0 +1,61 @@
+#! groovy
+pipeline {
+    agent any
+    tools {
+        maven 'maven-3.8.8'
+        jdk 'java17'
+    }
+    environment {
+        harborAddress = '192.168.5.26'
+        harborRepo = 'cqb'
+        harborUser = 'admin'
+        harborPasswd = 'Harbor12345'
+
+        ANSIBLE_CONFIG = "./jenkins/dev/ansible.cfg"
+    }
+    parameters {
+        gitParameter name: 'BRANCH_TAG',
+                type: 'PT_BRANCH',
+                branchFilter: 'origin/(.*)',
+                selectedValue: 'DEFAULT',
+                sortMode: 'DESCENDING_SMART',
+                description: 'Select your branch or tag.'
+    }
+    stages {
+        stage('fetch gitlab code') {
+            steps {
+                checkout([$class: 'GitSCM',
+                          branches: [[name: "${params.BRANCH_TAG}"]],
+                          doGenerateSubmoduleConfigurations: false,
+                          extensions: [],
+                          gitTool: 'Default',
+                          submoduleCfg: [],
+                          userRemoteConfigs: [[url: scm.userRemoteConfigs[0].url ]]
+                ])
+            }
+        }
+        stage('mvn build') {
+            steps {
+                sh 'mvn clean install -Pdev -Dmaven.test.skip=true -U'
+            }
+        }
+        stage('docker build') {
+            steps {
+                sh 'docker build -t ${JOB_NAME} .'
+            }
+        }
+        stage('docker push to Harbor') {
+            steps {
+                sh '''docker login -u ${harborUser} -p ${harborPasswd} ${harborAddress}
+                      docker tag ${JOB_NAME} ${harborAddress}/${harborRepo}/${JOB_NAME}
+                      docker push ${harborAddress}/${harborRepo}/${JOB_NAME}
+                    '''
+            }
+        }
+        stage('publish') {
+            steps {
+                ansiblePlaybook(inventory: './jenkins/dev/hosts', playbook: './jenkins/dev/jenkins.yml', extras: '-v')
+            }
+        }
+    }
+}

@@ -1,0 +1,5 @@
+[dev-192.168.5.25]
+192.168.5.25
+[dev-192.168.5.25:vars]
+ansible_ssh_user=root
+ansible_ssh_pass=Ld123!@#

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
+import org.sunso.sotheme.springcloud4.common.dto.user.UserDTO;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -41,6 +42,17 @@ public class User implements Serializable {
         user.setSex(String.valueOf(userId%2));
         user.setCreationTime(new Date());
         user.setUpdateTime(new Date());
+        return user;
+    }
+
+    public static User newInstance(UserDTO userDTO) {
+        User user = new User();
+        user.setId(userDTO.getId());
+        user.setAge(userDTO.getAge());
+        user.setName(userDTO.getName());
+        user.setSex(userDTO.getSex());
+        user.setCreationTime(userDTO.getCreationTime());
+        user.setUpdateTime(userDTO.getUpdateTime());
         return user;
     }
 }

@@ -1,0 +1,6 @@
+db:
+  num: 1
+  user: ${MYSQL_USER:ldadmin}
+  password: ${MYSQL_PWD:2gYT0$uXt@^y7B33}
+  url:
+    0: jdbc:mysql://${MYSQL_HOST:rm-2zet83o33089sz03x.mysql.rds.aliyuncs.com}:${MYSQL_PORT:3306}/${MYSQL_DB:ld_config}?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&allowPublicKeyRetrieval=true

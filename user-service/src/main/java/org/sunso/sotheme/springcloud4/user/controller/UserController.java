@@ -1,10 +1,8 @@
 package org.sunso.sotheme.springcloud4.user.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.sunso.sotheme.springcloud4.common.dto.user.UserDTO;
 import org.sunso.sotheme.springcloud4.user.entity.User;
 import org.sunso.sotheme.springcloud4.user.service.UserService;
 
@@ -27,5 +25,10 @@ public class UserController {
     @GetMapping("/save/{userId}")
     public User saveUser(@PathVariable Long userId) {
         return userService.save(userId);
+    }
+
+    @PostMapping("/save")
+    public User saveUser(@RequestBody UserDTO userDTO) {
+        return userService.save(userDTO);
     }
 }

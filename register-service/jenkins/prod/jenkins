@@ -1,0 +1,66 @@
+#! groovy
+pipeline {
+    agent any
+    tools {
+        maven 'maven-3.8.8'
+        jdk 'java17'
+    }
+    environment {
+        harborAddress = 'registry.cn-beijing.aliyuncs.com'
+        harborRepo = 'lvdong-service'
+        harborUser = 'harborUser'
+        harborPasswd = 'harborPasswd'
+
+        ANSIBLE_CONFIG = "./jenkins/prod/ansible.cfg"
+    }
+    parameters {
+        gitParameter name: 'BRANCH_TAG',
+                type: 'PT_TAG',
+                branchFilter: 'origin/(.*)',
+                selectedValue: 'DEFAULT',
+                sortMode: 'DESCENDING_SMART',
+                description: 'Select your branch or tag.'
+    }
+    stages {
+        stage('fetch gitlab code') {
+            steps {
+                checkout([$class: 'GitSCM',
+                          branches: [[name: "${params.BRANCH_TAG}"]],
+                          doGenerateSubmoduleConfigurations: false,
+                          extensions: [],
+                          gitTool: 'Default',
+                          submoduleCfg: [],
+                          userRemoteConfigs: [[url: scm.userRemoteConfigs[0].url ]]
+                ])
+            }
+        }
+        stage('prepare') {
+            steps {
+                sh 'chmod 600 ./jenkins/prod/register.pem'
+            }
+        }
+        stage('mvn build') {
+            steps {
+                sh 'mvn clean install -Pprod -Dmaven.test.skip=true -U'
+            }
+        }
+        stage('docker build') {
+            steps {
+                sh 'docker build -t ${JOB_NAME} -f ./Dockerfile .'
+            }
+        }
+        stage('docker push to Harbor') {
+            steps {
+                sh '''docker login -u ${harborUser} -p ${harborPasswd} ${harborAddress}
+                      docker tag ${JOB_NAME} ${harborAddress}/${harborRepo}/${JOB_NAME}
+                      docker push ${harborAddress}/${harborRepo}/${JOB_NAME}
+                    '''
+            }
+        }
+        stage('publish') {
+            steps {
+                ansiblePlaybook(inventory: './jenkins/prod/hosts', playbook: './jenkins/prod/jenkins.yml', extras: '-v')
+            }
+        }
+    }
+}

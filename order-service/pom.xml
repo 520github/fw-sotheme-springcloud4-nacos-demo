@@ -45,6 +45,11 @@
             <artifactId>spring-cloud-starter-openfeign</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-loadbalancer</artifactId>
+        </dependency>
+
         <!--注册中心客户端-->
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
@@ -97,7 +102,7 @@
             <properties>
                 <!-- 环境标识，需要与配置文件的名称相对应 -->
                 <profiles.active>dev</profiles.active>
-                <nacos.addr>192.168.5.25</nacos.addr>
+                <nacos.addr>127.0.0.1</nacos.addr>
             </properties>
             <activation>
                 <!-- 默认环境 -->

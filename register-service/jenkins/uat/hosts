@@ -1,0 +1,5 @@
+[uat-601.305.18.129]
+601.305.18.129
+[uat-601.305.18.129:vars]
+ansible_ssh_user=root
+ansible_ssh_private_key_file=./jenkins/uat/register.pem

@@ -14,6 +14,7 @@
         <module>user-service</module>
         <module>common-service</module>
         <module>gateway-service</module>
+        <module>register-service</module>
     </modules>
 
     <properties>
