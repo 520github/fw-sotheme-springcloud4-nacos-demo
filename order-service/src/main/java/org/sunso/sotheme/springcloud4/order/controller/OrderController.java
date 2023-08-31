@@ -50,6 +50,11 @@ public class OrderController {
         return userServiceFeignClient.saveUser(getUserDTO(userId));
     }
 
+    @GetMapping("/user/service/delete/{userId}")
+    public int deleteUser(@PathVariable Long userId) {
+        return userServiceFeignClient.deleteUser(userId);
+    }
+
     private UserDTO getUserDTO(Long userId) {
         UserDTO userDTO = new UserDTO();
         userDTO.setId(userId);

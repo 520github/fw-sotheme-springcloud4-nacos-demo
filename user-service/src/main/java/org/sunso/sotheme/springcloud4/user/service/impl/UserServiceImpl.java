@@ -41,4 +41,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
         return null;
     }
+
+    @Override
+    public int deleteUser(Long userId) {
+        User user = findOneByUserId(userId);
+        if (user == null) {
+            return -1;
+        }
+        boolean result = removeById(userId);
+        if (result) {
+            return 1;
+        }
+        return 0;
+    }
 }

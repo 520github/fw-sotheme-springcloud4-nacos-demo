@@ -10,4 +10,6 @@ public interface UserService extends IService<User> {
     User save(Long userId);
 
     User save(UserDTO userDTO);
+
+    int deleteUser(Long userId);
 }
