@@ -11,10 +11,12 @@ spring:
     name: gatewayService
   profiles:
     active: ${activeProfile:dev}
+
   config:
     import:
       - nacos:dev-common.yml
       - nacos:dev-nacos-common.yml
+      - nacos:dev-log-common.yml
   cloud:
     nacos:
       config:
@@ -25,7 +27,18 @@ spring:
       discovery:
         locator:
           enabled: true
+      enabled: true
       routes:
+        - id: order
+          uri: http://localhost:6061
+          predicates:
+            - Path=/order/**
+          filters:
+            - name: RequestRateLimiter
+              args:
+                keyResolver: '#{@myKeyResolver}'
+                redis-rate-limiter.replenishRate: 1 # 每秒生产多少个令牌
+                redis-rate-limiter.burstCapacity: 0 # 令牌桶容量
         #
         - id: baidu
           uri: http://www.baidu.com
@@ -38,3 +51,11 @@ spring:
           order: -1
           predicates:
               - Path=/dataService4/data/check/**
+  redis:
+    host: 192.168.5.25
+    port: 6381
+    password: Ld123!@#
+
+logging:
+  level:
+    org.springframework.cloud.gateway: debug
