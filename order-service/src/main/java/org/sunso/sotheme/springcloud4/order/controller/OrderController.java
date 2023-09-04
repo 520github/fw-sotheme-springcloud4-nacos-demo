@@ -31,6 +31,13 @@ public class OrderController {
     private DataFeignClient dataFeignClient;
 
 
+    @GetMapping("test/timeout/{time}")
+    public int testTimeout(@PathVariable int time) throws InterruptedException {
+        if (time <10) {
+            Thread.sleep(2000);
+        }
+        return time;
+    }
 
     @GetMapping("/get/{orderId}")
     public Order findOneByOrderId(@PathVariable Long orderId) {

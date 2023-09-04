@@ -34,6 +34,10 @@ spring:
           predicates:
             - Path=/order/**
           filters:
+            - name: CircuitBreaker
+              args:
+                name: myCircuitBreaker
+                fallbackUri: forward:/fallback
             - name: RequestRateLimiter
               args:
                 keyResolver: '#{@myKeyResolver}'
