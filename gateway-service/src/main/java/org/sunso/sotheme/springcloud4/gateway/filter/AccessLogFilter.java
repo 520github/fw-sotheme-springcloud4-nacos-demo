@@ -30,6 +30,7 @@ import org.springframework.web.reactive.function.server.HandlerStrategies;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.util.WebUtils;
+import org.sunso.sotheme.springcloud4.gateway.entity.AccessLog;
 import org.sunso.sotheme.springcloud4.gateway.util.IpUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -53,11 +54,19 @@ public class AccessLogFilter implements GlobalFilter, Ordered {
         log.info("AccessLogFilter requestPath[{}], requestIp[{}] ", requestPath, requestIp);
         Route route = getGatewayRoute(exchange);
 
+        AccessLog accessLog = AccessLog.newInstance();
+        accessLog.setSchema(request.getURI().getScheme());
+        accessLog.setRequestMethod(request.getMethod().name());
+        accessLog.setRequestPath(requestPath);
+        accessLog.setTargetServer(route.getId());
+        accessLog.setRequestTime(new Date());
+        accessLog.setIp(requestIp);
+
         MediaType mediaType = request.getHeaders().getContentType();
         if(MediaType.APPLICATION_FORM_URLENCODED.isCompatibleWith(mediaType) || MediaType.APPLICATION_JSON.isCompatibleWith(mediaType)){
-            return requestBodyLog(exchange, chain);
+            return requestBodyLog(exchange, chain, accessLog);
         }else{
-            return requestParameterLog(exchange, chain);
+            return requestParameterLog(exchange, chain, accessLog);
         }
     }
 
@@ -70,27 +79,30 @@ public class AccessLogFilter implements GlobalFilter, Ordered {
         return IpUtils.getRealIpAddress(request);
     }
 
-    private Mono<Void> requestParameterLog(ServerWebExchange exchange, GatewayFilterChain chain) {
+    private Mono<Void> requestParameterLog(ServerWebExchange exchange, GatewayFilterChain chain, AccessLog accessLog) {
         StringBuilder builder = new StringBuilder();
         MultiValueMap<String, String> queryParams = exchange.getRequest().getQueryParams();
         for (Map.Entry<String, List<String>> entry : queryParams.entrySet()) {
             builder.append(entry.getKey()).append("=").append(StringUtils.join(entry.getValue(), ",")).append("&");
         }
         log.info("request parameter[{}]", builder);
+        accessLog.setRequestBody(builder.toString());
 
         //获取响应体
-        ServerHttpResponseDecorator decoratedResponse = responseDecorate(exchange);
+        ServerHttpResponseDecorator decoratedResponse = responseDecorate(exchange, accessLog);
         return chain.filter(exchange.mutate().response(decoratedResponse).build())
                 .then(Mono.fromRunnable(() -> {
                     log.info("write requestParameterLog log");
+                    writeAccessLog(accessLog);
                 }));
     }
 
-    private Mono requestBodyLog(ServerWebExchange exchange, GatewayFilterChain chain) {
+    private Mono requestBodyLog(ServerWebExchange exchange, GatewayFilterChain chain, AccessLog accessLog) {
         ServerRequest serverRequest = ServerRequest.create(exchange, messageReaders);
         Mono<String> modifiedBody = serverRequest.bodyToMono(String.class)
                 .flatMap(body -> {
                     log.info("body [{}]", body);
+                    accessLog.setRequestBody(body);
                     return Mono.just(body);
                 });
         BodyInserter bodyInserter = BodyInserters.fromPublisher(modifiedBody, String.class);
@@ -106,11 +118,12 @@ public class AccessLogFilter implements GlobalFilter, Ordered {
                     ServerHttpRequest decoratedRequest = requestDecorate(exchange, headers, outputMessage);
 
                     // 记录响应日志
-                    ServerHttpResponseDecorator decoratedResponse = responseDecorate(exchange);
+                    ServerHttpResponseDecorator decoratedResponse = responseDecorate(exchange, accessLog);
                     return chain.filter(exchange.mutate().request(decoratedRequest).response(decoratedResponse)
                             .build()).then(Mono.fromRunnable(() ->{
                         // 打印日志
                         log.info("write requestBodyLog log");
+                        writeAccessLog(accessLog);
                     }));
                 }));
     }
@@ -143,7 +156,7 @@ public class AccessLogFilter implements GlobalFilter, Ordered {
         };
     }
 
-    private ServerHttpResponseDecorator responseDecorate(ServerWebExchange exchange) {
+    private ServerHttpResponseDecorator responseDecorate(ServerWebExchange exchange, AccessLog accessLog) {
         ServerHttpResponse response = exchange.getResponse();
         DataBufferFactory bufferFactory = response.bufferFactory();
         return new ServerHttpResponseDecorator(response) {
@@ -151,6 +164,8 @@ public class AccessLogFilter implements GlobalFilter, Ordered {
             public Mono<Void> writeWith(Publisher<? extends DataBuffer> body) {
                 if (body instanceof Flux) {
                     Date responseTime = new Date();
+                    accessLog.setResponseTime(responseTime);
+                    accessLog.setExecuteTime(accessLog.fetchExecuteTime());
                     String originalResponseContentType = exchange.getAttribute(ServerWebExchangeUtils.ORIGINAL_RESPONSE_CONTENT_TYPE_ATTR);
                     if (HttpStatus.OK == this.getStatusCode()
                             && originalResponseContentType != null
@@ -170,6 +185,8 @@ public class AccessLogFilter implements GlobalFilter, Ordered {
 
                             log.info("responseResult[{}]", responseResult);
 
+                            accessLog.setResponseData(responseResult);
+
                             return bufferFactory.wrap(content);
 
                         }));
@@ -178,5 +195,9 @@ public class AccessLogFilter implements GlobalFilter, Ordered {
                 return super.writeWith(body);
             }
         };
+    }
+
+    private void writeAccessLog(AccessLog accessLog) {
+        log.info("---------------write accessLog[{}]", accessLog);
     }
 }
