@@ -33,6 +33,7 @@ spring:
           uri: http://localhost:6061
           predicates:
             - Path=/order/**
+          # 增加断路器filter
           filters:
             - name: CircuitBreaker
               args:

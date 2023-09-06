@@ -2,8 +2,18 @@ server:
   port: ${port:6061}
 
 management:
+  health:
+    mongo:
+      enabled: false
+    defaults:
+      enabled: true
   security:
-    enabled: true
+    enabled: false
+  endpoints:
+    web:
+      base-path: /monitor
+      path-mapping:
+        health: up
   endpoint:
     health:
       show-details: always
@@ -13,10 +23,10 @@ spring:
     name: orderService4
   profiles:
     active: ${activeProfile:dev}
-  security:
-    user:
-      name: admin
-      password: 123456
+#  security:
+#    user:
+#      name: admin
+#      password: 123456
   cloud:
     nacos:
       config:

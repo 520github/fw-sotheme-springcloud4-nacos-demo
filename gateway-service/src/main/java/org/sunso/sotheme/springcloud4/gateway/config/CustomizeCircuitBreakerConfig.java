@@ -11,6 +11,9 @@ import org.springframework.context.annotation.Configuration;
 
 import java.time.Duration;
 
+/**
+ * 断路器配置
+ */
 @Configuration
 public class CustomizeCircuitBreakerConfig {
 
