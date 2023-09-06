@@ -11,12 +11,18 @@ management:
     enabled: false
   endpoints:
     web:
+      exposure:
+        # 暴露所有端点
+        include: '*'
       base-path: /monitor
       path-mapping:
         health: up
   endpoint:
     health:
       show-details: always
+    # 之间关闭进程
+    shutdown:
+      enabled: false
 
 spring:
   application:
