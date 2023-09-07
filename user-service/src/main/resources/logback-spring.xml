@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <springProperty scope="context" name="loggingLevel" source="logging.level.root"/>
+    <springProperty scope="context" name="loggingRoot" source="logging.path"/>
+
+    <property name="CONSOLE_LOG_PATTERN" value="[TRACEID:%X{traceId}] [%-5p] [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%t@${PID}]  %c %M : %m%n"/>
+
+    <!-- [公共Appender] 控制台STDOUT -->
+    <appender name="STDOUT-APPENDER" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder charset="UTF-8">
+            <!--%d日期格式；%p输出日志的优先级；%c所属类的全名；%l输出日志发生的位置，线程，代码行数；%m程序输出的信息；%n换行 -->
+<!--            <pattern>[TRACEID:%X{traceId}] %d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %c:%L - %m%n</pattern>-->
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="bizLog"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>${loggingRoot}/bizLog.log</File>
+        <encoder charset="UTF-8">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-17c{2}:%L - %m%n
+            </pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${loggingRoot}/bizLog.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+<!--    <logger name="com.panda.oversea.api" additivity="false" level="${loggingLevel}">-->
+<!--        <appender-ref ref="bizLog"/>-->
+<!--        <appender-ref ref="STDOUT-APPENDER"/>-->
+<!--    </logger>-->
+
+    <root level="${loggingLevel}">
+<!--        <appender-ref ref="bizLog" />-->
+        <appender-ref ref="STDOUT-APPENDER" />
+    </root>
+
+<!--    <springProfile name="wenky">-->
+<!--        <root level="${loggingLevel}">-->
+<!--            <appender-ref ref="STDOUT-APPENDER" />-->
+<!--        </root>-->
+<!--    </springProfile>-->
+
+</configuration>

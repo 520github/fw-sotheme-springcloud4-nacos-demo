@@ -19,10 +19,23 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.sunso.keypoint</groupId>
+            <artifactId>trace-log-starter-mdc</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.sunso.keypoint</groupId>
+            <artifactId>trace-log-starter-feign</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.sunso.sotheme.springcloud4</groupId>
             <artifactId>common-service-springcloud4-nacos</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -74,6 +87,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
+
+<!--        <dependency>-->
+<!--            <groupId>org.sunso.sotheme.springcloud4</groupId>-->
+<!--            <artifactId>trace-log-stuff-springcloud4-nacos</artifactId>-->
+<!--            <version>1.0-SNAPSHOT</version>-->
+<!--        </dependency>-->
 
 <!--        <dependency>-->
 <!--            <groupId>org.springframework.boot</groupId>-->

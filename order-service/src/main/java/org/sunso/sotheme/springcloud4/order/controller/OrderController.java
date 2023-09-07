@@ -50,9 +50,22 @@ public class OrderController {
         return time;
     }
 
+    @GetMapping("test/async/{time}")
+    public long testAsync(@PathVariable long time) {
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                log.info("testAsync time[{}]", time);
+                userFeignClient.findOneByUserId(time);
+            }
+        });
+        thread.start();
+        return time;
+    }
+
     @GetMapping("/get/{orderId}")
     public Order findOneByOrderId(@PathVariable Long orderId) {
-        log.debug("*********************findOneByOrderId****************** by orderId[{}]", orderId);
+        log.info("*********************findOneByOrderId****************** by orderId[{}]", orderId);
         return orderGetTimer.record(() -> getOrderId(orderId));
 //        Order order = orderService.findOneByOrderId(orderId);
 //        if (order == null) {
@@ -72,6 +85,7 @@ public class OrderController {
 
     @GetMapping("/user/get/{userId}")
     public UserDTO findOneUserByUserId(@PathVariable Long userId) {
+        log.info("------findOneUserByUserId-------------- by userId[{}]", userId);
         dataFeignClient.save(getDataDTO("/user/get/"+userId));
         return userFeignClient.findOneByUserId(userId);
     }

@@ -19,3 +19,7 @@ spring:
       - nacos:dev-user.yml
       - nacos:dev-nacos-common.yml
       - nacos:dev-mysql-common.yml
+
+logging:
+  level:
+    root: info

@@ -15,6 +15,7 @@
         <module>common-service</module>
         <module>gateway-service</module>
         <module>register-service</module>
+        <module>trace-log-stuff</module>
     </modules>
 
     <properties>
@@ -25,10 +26,16 @@
         <spring-cloud.version>2022.0.0</spring-cloud.version>
         <spring-cloud-alibaba.version>2022.0.0.0-RC1</spring-cloud-alibaba.version>
         <mybatis-plus.version>3.5.3.1</mybatis-plus.version>
+        <hutool.version>5.8.20</hutool.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>${hutool.version}</version>
+            </dependency>
             <!-- spring boot 依赖 -->
             <dependency>
                 <groupId>org.springframework.boot</groupId>

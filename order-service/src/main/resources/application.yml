@@ -45,3 +45,8 @@ spring:
       - nacos:@profiles.active@-order.yml
       - nacos:@profiles.active@-nacos-common.yml
       - nacos:@profiles.active@-mysql-common.yml
+
+
+logging:
+  level:
+    root: info

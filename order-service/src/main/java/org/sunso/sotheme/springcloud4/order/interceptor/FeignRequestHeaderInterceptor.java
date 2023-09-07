@@ -39,11 +39,11 @@ public class FeignRequestHeaderInterceptor implements RequestInterceptor {
 
     private ServletRequestAttributes getServletRequestAttributes() {
         ServletRequestAttributes attributes = (ServletRequestAttributes)RequestContextHolder.getRequestAttributes();
-        if (attributes == null) {
-            log.info("getServletRequestAttributes from currentRequestAttributes");
-            attributes = (ServletRequestAttributes) RequestContextHolder
-                    .currentRequestAttributes();
-        }
+//        if (attributes == null) {
+//            log.info("getServletRequestAttributes from currentRequestAttributes");
+//            attributes = (ServletRequestAttributes) RequestContextHolder
+//                    .currentRequestAttributes();
+//        }
         return attributes;
     }
 }
